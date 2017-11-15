@@ -1,41 +1,40 @@
 function Requests() {
-    this.play = function (p1, p2, observer) {
-        new PlayRequest(p1, p2, observer).process()
+    this.playRound = function (p1Throw, p2Throw, observer) {
+        new PlayRoundRequest(p1Throw, p2Throw, observer).process()
     }
 }
 
-function PlayRequest(p1, p2, observer){
+function PlayRoundRequest(p1Throw, p2Throw, observer){
     this.process = function(){
-        if (invalid(p1) || invalid(p2))
+        if (invalidThrow(p1Throw) || invalidThrow(p2Throw))
             observer.invalid()
-        else if (draw())
+        else if (tie())
             observer.tie()
-        else if (p1ShapeWins()
-        )
+        else if (p1Wins())
             observer.p1Wins()
         else
             observer.p2Wins()
     }
 
-    function draw() {
-        return p1 === p2
+    function tie() {
+        return p1Throw === p2Throw
     }
 
-    function p1ShapeWins() {
-        return  p1 === "rock"     && p2 === "scissors" ||
-                p1 === "scissors" && p2 === "paper"    ||
-                p1 === "paper"    && p2 === "rock"
+    function p1Wins() {
+        return  p1Throw === "rock"     && p2Throw === "scissors" ||
+                p1Throw === "scissors" && p2Throw === "paper"    ||
+                p1Throw === "paper"    && p2Throw === "rock"
     }
 
-    const VALID_SHAPES = ["rock", "paper", "scissors"]
+    const VALID_THROWS = ["rock", "paper", "scissors"]
 
-    function invalid(t) {
-        return !VALID_SHAPES.includes(t)
+    function invalidThrow(t) {
+        return !VALID_THROWS.includes(t)
     }
 }
 
 
-describe("play", function () {
+describe("play round", function () {
     let observer, requests
 
     beforeEach(function () {
@@ -47,19 +46,19 @@ describe("play", function () {
             observer = jasmine.createSpyObj("observer", ["p1Wins"])
         })
         it("rock v. scissors", function () {
-            requests.play("rock", "scissors", observer)
+            requests.playRound("rock", "scissors", observer)
 
             expect(observer.p1Wins).toHaveBeenCalled()
         })
 
         it("scissors v. paper", function () {
-            requests.play("scissors", "paper", observer)
+            requests.playRound("scissors", "paper", observer)
 
             expect(observer.p1Wins).toHaveBeenCalled()
         })
 
         it("paper v. rock", function () {
-            requests.play("paper", "rock", observer)
+            requests.playRound("paper", "rock", observer)
 
             expect(observer.p1Wins).toHaveBeenCalled()
         })
@@ -71,19 +70,19 @@ describe("play", function () {
         })
 
         it("scissors v. rock", function () {
-            requests.play("scissors", "rock", observer)
+            requests.playRound("scissors", "rock", observer)
 
             expect(observer.p2Wins).toHaveBeenCalled()
         })
 
         it("paper v. scissors", function () {
-            requests.play("paper", "scissors", observer)
+            requests.playRound("paper", "scissors", observer)
 
             expect(observer.p2Wins).toHaveBeenCalled()
         })
 
         it("rock v. paper", function () {
-            requests.play("rock", "paper", observer)
+            requests.playRound("rock", "paper", observer)
 
             expect(observer.p2Wins).toHaveBeenCalled()
         })
@@ -95,19 +94,19 @@ describe("play", function () {
         })
 
         it("rock v. rock", function () {
-            requests.play("rock", "rock", observer)
+            requests.playRound("rock", "rock", observer)
 
             expect(observer.tie).toHaveBeenCalled()
         })
 
         it("paper v. paper", function () {
-            requests.play("paper", "paper", observer)
+            requests.playRound("paper", "paper", observer)
 
             expect(observer.tie).toHaveBeenCalled()
         })
 
         it("scissors v. scissors", function () {
-            requests.play("scissors", "scissors", observer)
+            requests.playRound("scissors", "scissors", observer)
 
             expect(observer.tie).toHaveBeenCalled()
         })
@@ -119,19 +118,19 @@ describe("play", function () {
         })
 
         it("<INVALID> v. rock", function () {
-            requests.play(invalidThrow(), "rock", observer)
+            requests.playRound(invalidThrow(), "rock", observer)
 
             expect(observer.invalid).toHaveBeenCalled()
         })
 
         it("rock v. <INVALID>", function () {
-            requests.play("rock", invalidThrow(), observer)
+            requests.playRound("rock", invalidThrow(), observer)
 
             expect(observer.invalid).toHaveBeenCalled()
         })
 
         it("same invalid throws for p1 and p2", function () {
-            requests.play("sailboat", "sailboat", observer)
+            requests.playRound("sailboat", "sailboat", observer)
 
             expect(observer.invalid).toHaveBeenCalled()
         })
