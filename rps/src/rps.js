@@ -1,10 +1,10 @@
-function Requests() {
-    this.playRound = function (p1Throw, p2Throw, observer, repo) {
+function Requests(repo) {
+    this.playRound = function (p1Throw, p2Throw, observer) {
         new PlayRoundRequest(p1Throw, p2Throw, observer, repo).process()
     }
 
-    this.getHistory = function(observer,  repo){
-        if (repo.isEmpty()){
+    this.getHistory = function (observer) {
+        if (repo.isEmpty()) {
             observer.noRounds()
         } else {
             observer.rounds(repo.getAll())
@@ -12,21 +12,27 @@ function Requests() {
     }
 }
 
-function Round(){
-
+function Round(p1Throw, p2Throw, result) {
+    this.p1Throw = p1Throw
+    this.p2Throw = p2Throw
+    this.result = result
 }
 
-function PlayRoundRequest(p1Throw, p2Throw, observer, repo){
-    this.process = function(){
-        if (invalidThrow(p1Throw) || invalidThrow(p2Throw)) {
-            repo.save(new Round(p1Throw, p2Throw, "invalid"))
-            observer.invalid()
-        } else if (tie())
-            observer.tie()
+function PlayRoundRequest(p1Throw, p2Throw, observer, repo) {
+    this.process = function () {
+        if (invalidThrow(p1Throw) || invalidThrow(p2Throw))
+            handleResult("invalid")
+        else if (tie())
+            handleResult("tie")
         else if (p1Wins())
-            observer.p1Wins()
+            handleResult("p1Wins")
         else
-            observer.p2Wins()
+            handleResult("p2Wins")
+    }
+
+    function handleResult(result) {
+        repo.save(new Round(p1Throw, p2Throw, result))
+        observer[result]()
     }
 
     function tie() {
@@ -34,9 +40,9 @@ function PlayRoundRequest(p1Throw, p2Throw, observer, repo){
     }
 
     function p1Wins() {
-        return  p1Throw === "rock"     && p2Throw === "scissors" ||
-            p1Throw === "scissors" && p2Throw === "paper"    ||
-            p1Throw === "paper"    && p2Throw === "rock"
+        return p1Throw === "rock" && p2Throw === "scissors" ||
+            p1Throw === "scissors" && p2Throw === "paper" ||
+            p1Throw === "paper" && p2Throw === "rock"
     }
 
     const VALID_THROWS = ["rock", "paper", "scissors"]
