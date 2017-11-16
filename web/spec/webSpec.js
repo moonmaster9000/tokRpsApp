@@ -130,9 +130,9 @@ describe("PlayForm", function () {
         cleanupDOM()
     })
 
-    function renderApp(requestStub) {
+    function renderApp(requestsDouble) {
         ReactDOM.render(
-            <PlayForm requests={requestStub}/>,
+            <PlayForm requests={requestsDouble}/>,
             domFixture
         )
     }
