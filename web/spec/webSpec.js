@@ -1,5 +1,6 @@
 const React = require("react")
 const ReactDOM = require("react-dom")
+const ReactTestUtils = require("react-dom/test-utils")
 
 class PlayForm extends React.Component {
     constructor() {
@@ -15,6 +16,14 @@ class PlayForm extends React.Component {
         this.setState({result: "INVALID!"})
     }
 
+    p1Wins(){
+        this.setState({result: "P1 Wins!!!!"})
+    }
+
+    p2Wins(){
+        this.setState({result: "P2 Wins!!!!"})
+    }
+
     tie(){
         this.setState({result: "TIE!"})
     }
@@ -22,6 +31,8 @@ class PlayForm extends React.Component {
     render() {
         return <div>
             {this.state.result}
+            <input name="p1Throw"/>
+            <input name="p2Throw"/>
             <button onClick={this.submitHandler.bind(this)}>PLAY</button>
         </div>
     }
@@ -51,6 +62,48 @@ describe("PlayForm", function () {
             expect(page()).toContain("TIE!")
         })
     })
+    
+    describe("when the request processes as 'P1 Wins!!!'", function () {
+        beforeEach(function () {
+            renderApp({play: (p1, p2, observer) => observer.p1Wins()})
+        })
+
+        it("displays 'P1 Wins!!!!'", function () {
+            expect(page()).not.toContain("P1 Wins!!!!")
+            submitForm()
+            expect(page()).toContain("P1 Wins!!!!")
+        })
+    })
+
+    describe("when the request processes as 'P2 Wins!!!'", function () {
+        beforeEach(function () {
+            renderApp({play: (p1, p2, observer) => observer.p2Wins()})
+        })
+
+        it("displays 'P2 Wins!!!!'", function () {
+            expect(page()).not.toContain("P2 Wins!!!!")
+            submitForm()
+            expect(page()).toContain("P2 Wins!!!!")
+        })
+    })
+
+    it("sends the user's input to the play request", function () {
+        let playSpy = jasmine.createSpy("playSpy")
+        renderApp({play: playSpy})
+
+        let input = document.querySelector("[name='p1Throw']")
+        input.value = "foo"
+        ReactTestUtils.Simulate.change(input)
+
+        input = document.querySelector("[name='p2Throw']")
+        input.value = "bar"
+        ReactTestUtils.Simulate.change(input)
+
+        submitForm()
+
+        expect(playSpy).toHaveBeenCalledWith("foo", "bar", jasmine.any(Object))
+    })
+
 
     let domFixture
 
