@@ -52,4 +52,6 @@ function PlayRoundRequest(p1Throw, p2Throw, observer, repo) {
     }
 }
 
-module.exports = {Requests, Round}
+const FakeRoundRepo = require("./FakeRoundRepo")
+
+module.exports = {Requests, Round, FakeRoundRepo}

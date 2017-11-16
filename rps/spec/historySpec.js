@@ -1,5 +1,5 @@
 const {Requests, Round} = require("../src/rps")
-const FakeRoundRepo = require("./FakeRoundRepo")
+const FakeRoundRepo = require("../src/FakeRoundRepo")
 
 describe("history", function () {
     let requests

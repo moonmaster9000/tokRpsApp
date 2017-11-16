@@ -1,5 +1,5 @@
 const {Requests} = require("../src/rps")
-const FakeRoundRepo = require("./FakeRoundRepo")
+const FakeRoundRepo = require("../src/FakeRoundRepo")
 
 describe("play round", function () {
     let observer, requests
