@@ -9,7 +9,7 @@ class PlayForm extends React.Component {
     }
 
     submitHandler() {
-        this.props.requests.play("p1 throw placeholder", "p2 throw placeholder", this)
+        this.props.requests.play(this.state.p1Throw, this.state.p2Throw, this)
     }
 
     invalid(){
@@ -28,11 +28,15 @@ class PlayForm extends React.Component {
         this.setState({result: "TIE!"})
     }
 
+    inputChanged(e){
+        this.setState({[e.target.name]: e.target.value})
+    }
+
     render() {
         return <div>
             {this.state.result}
-            <input name="p1Throw"/>
-            <input name="p2Throw"/>
+            <input name="p1Throw" onChange={this.inputChanged.bind(this)}/>
+            <input name="p2Throw" onChange={this.inputChanged.bind(this)}/>
             <button onClick={this.submitHandler.bind(this)}>PLAY</button>
         </div>
     }
@@ -89,23 +93,19 @@ describe("PlayForm", function () {
 
     it("sends the user's input to the play request", function () {
         let playSpy = jasmine.createSpy("playSpy")
+
         renderApp({play: playSpy})
 
-        let input = document.querySelector("[name='p1Throw']")
-        input.value = "foo"
-        ReactTestUtils.Simulate.change(input)
-
-        input = document.querySelector("[name='p2Throw']")
-        input.value = "bar"
-        ReactTestUtils.Simulate.change(input)
+        fillIn("p1Throw", "foo")
+        fillIn("p2Throw", "bar")
 
         submitForm()
 
         expect(playSpy).toHaveBeenCalledWith("foo", "bar", jasmine.any(Object))
     })
 
-
     let domFixture
+
 
     function setupDOM() {
         domFixture = document.createElement("div")
@@ -118,6 +118,12 @@ describe("PlayForm", function () {
 
     function cleanupDOM() {
         domFixture.remove()
+    }
+
+    function fillIn(inputName, inputValue) {
+        let input = document.querySelector(`[name='${inputName}']`)
+        input.value = inputValue
+        ReactTestUtils.Simulate.change(input)
     }
 
     afterEach(function () {
