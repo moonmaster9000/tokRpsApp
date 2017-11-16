@@ -8,7 +8,15 @@ class PlayForm extends React.Component {
     }
 
     submitHandler() {
+        this.props.requests.play("p1 throw placeholder", "p2 throw placeholder", this)
+    }
+
+    invalid(){
         this.setState({result: "INVALID!"})
+    }
+
+    tie(){
+        this.setState({result: "TIE!"})
     }
 
     render() {
@@ -31,6 +39,18 @@ describe("PlayForm", function () {
             expect(page()).toContain("INVALID!")
         })
     })
+    
+    describe("when the request processes as 'TIE'", function () {
+        beforeEach(function () {
+            renderApp({play: (p1, p2, observer) => observer.tie()})
+        })
+
+        it("displays 'TIE!'", function () {
+            expect(page()).not.toContain("TIE!")
+            submitForm()
+            expect(page()).toContain("TIE!")
+        })
+    })
 
     let domFixture
 
@@ -51,9 +71,9 @@ describe("PlayForm", function () {
         cleanupDOM()
     })
 
-    function renderApp(alwaysInvalidRequest) {
+    function renderApp(requestStub) {
         ReactDOM.render(
-            <PlayForm requests={alwaysInvalidRequest}/>,
+            <PlayForm requests={requestStub}/>,
             domFixture
         )
     }
